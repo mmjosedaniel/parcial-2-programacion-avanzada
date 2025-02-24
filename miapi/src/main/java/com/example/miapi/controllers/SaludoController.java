@@ -1,19 +1,34 @@
 package com.example.miapi.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-// Indica que la clase es un controlador REST
+import java.util.Locale;
+
 @RestController
-// Establece la ruta base para todos los endpoints
 @RequestMapping("/api")
 public class SaludoController {
 
-	// Peticiones HTTP GET
+    @Autowired
+    private MessageSource messageSource;
+
     @GetMapping("/saludo")
-    // Metodo obtenerSaludo
-    public String obtenerSaludo() {
-        return "¡Hola, API RESTful!";
+    public String obtenerSaludo(@RequestParam(value = "lang", required = false) String lang) {
+        // Si se especifica el parámetro "lang", se crea el Locale correspondiente.
+        // En caso contrario, se usa un Locale predeterminado.
+        Locale locale;
+        if (lang != null && !lang.isEmpty()) {
+            // Se utiliza Locale.forLanguageTag() para crear el Locale a partir del string
+            locale = Locale.forLanguageTag(lang);
+        } else {
+            // Valor por defecto
+            locale = new Locale("es");
+        }
+        // Se obtiene el mensaje asociado
+        return messageSource.getMessage("saludo", null, locale);
     }
 }
