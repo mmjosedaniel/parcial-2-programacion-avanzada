@@ -4,6 +4,7 @@ import com.example.miapi.models.Producto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,13 @@ public class ProductoController {
 
     private List<Producto> productos = new ArrayList<>();
 
+    // se crea la lista con los productos
+    public ProductoController() {
+        productos.add(new Producto("1", "Laptop", 1200.0));
+        productos.add(new Producto("2", "Mouse", 25.0));
+        productos.add(new Producto("3", "Teclado", 45.0));
+    }
+
     // Agregar un producto (POST)
     @PostMapping
     public ResponseEntity<Producto> agregarProducto(@RequestBody Producto producto) {
@@ -22,10 +30,10 @@ public class ProductoController {
         return new ResponseEntity<>(producto, HttpStatus.CREATED);
     }
 
-    // Listar todos los productos (GET)
+    // Listar todos los productos (GET) - Retorna de forma reactiva los productos
     @GetMapping
-    public ResponseEntity<List<Producto>> listarProductos() {
-        return new ResponseEntity<>(productos, HttpStatus.OK);
+    public Flux<Producto> listarProductos() {
+        return Flux.fromIterable(productos);
     }
 
     // Obtener un producto por ID (GET)
